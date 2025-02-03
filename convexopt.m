@@ -1,0 +1,12 @@
+function TnPhFeatures = convexopt(s_entrada,fs)
+    y = zscore(s_entrada);
+    [r, p, t, l, d, e, obj] = cvxEDA(y, 1/fs); 
+    %p se corresponde con los impulsos nerviosos sudomotores
+    %r es la respuesta fásica a los impulsos p
+    %t se corresponde con la componente tónica
+    dr_ph = max(r)-min(r);
+    dr_tn = max(t)-min(t);
+    [peaks_ph, locs_ph] = findpeaks(p);
+    [peaks_tn, locs_tn] = findpeaks(t);
+    TnPhFeatures = {dr_ph, dr_tn, peaks_ph,locs_ph,peaks_tn,locs_tn};
+end
