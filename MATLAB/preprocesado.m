@@ -113,7 +113,8 @@ end
 
 n_TFeatures = size(TimeFeatures{1,2},2);
 n_FFeatures = size(FreqFeatures{1,2},2);
-feature_matrix = zeros(1+n_FFeatures+n_TFeatures,);
+% feature_matrix = zeros(1+n_FFeatures+n_TFeatures,);
+feature_matrix = [];
 
 % las características de cada fragmento de señal se almacenan por columnas
 for i = 1:numel(signals)
@@ -130,5 +131,6 @@ for i = 1:numel(signals)
 end
 
 % se exporta la matriz de vectores de características en formato .csv
-writematrix(feature_matrix,'EDA_data.csv')
+writematrix(feature_matrix','EDA_data.csv')
 
+disp('Section 5 complete: feature matrix exported to .csv file')
