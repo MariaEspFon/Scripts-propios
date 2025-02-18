@@ -1,18 +1,20 @@
 function TimeFeatures = features_t_domain(s)   
     s_mean = mean(s); % media
     s_desv = std(s); % desviación estándar
+    s_median = median(s); % mediana
     s_max = max(s);
     s_min = min(s);
-    s_rd = s_max-s_min; % rango dinámico
-    s_median = median(s); % mediana
-    s_diff1 = diff(s); % 1a derivada
-    s_mean_diff1 = mean(s_diff1); % media de la 1a derivada
+    s_dr = s_max-s_min; % rango dinámico
+    s_diff1 = diff(s); % 1ª derivada
+    s_diff1_median = median(s_diff1); % mediana de la 1ª derivada
+    s_diff1_desv = std(s_diff1); % desviación estándar de la 1ª derivada
+    s_kurt = kurtosis(s);
     [peaks, locs] = peaks_local(s); % picos y su localización
     peaks_total = peaks';
     numSCR = numel(cell2mat(peaks_total)); % nº picos
     sumSCR = sum(cell2mat(peaks_total)); % suma de la magnitud de los picos
     s_int = trapz(s,1); % área bajo cada ventana
-    TimeFeatures = {s_median; s_desv; s_max; s_min; numSCR; s_int};
+    TimeFeatures = {s_median; s_desv; s_max; s_min; s_diff1_desv; s_diff1_median; numSCR; s_int};
 end
 
 function [peaks_total,locs_total] = peaks_local(s)

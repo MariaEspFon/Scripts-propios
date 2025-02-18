@@ -64,7 +64,7 @@ elseif flag == 'w'
     for i = 1:numel(signals)
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        TimeFeatures{i,2} = zeros(6,size(w_signal,2));
+        TimeFeatures{i,2} = zeros(8,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
             t_features = features_t_domain(w_signal(:,window));
@@ -105,9 +105,6 @@ elseif flag == 'w'
 else
     disp('error: wrong input')
 end
-
-%% Paso 4.3. Extracción de características tónica-fásica
-
 
 %% Paso 5. Formación del dataset
 
