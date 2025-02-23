@@ -9,7 +9,7 @@ function TimeFeatures = features_t_domain(s)
     s_diff1_median = median(s_diff1); % mediana de la 1ª derivada
     s_diff1_desv = std(s_diff1); % desviación estándar de la 1ª derivada
     s_kurt = kurtosis(s);
-    [peaks, locs] = peaks_local(s); % picos y su localización
+    [peaks, locs] = peaks_local(s,s_mean); % picos y su localización
     peaks_total = peaks';
     numSCR = numel(cell2mat(peaks_total)); % nº picos
     sumSCR = sum(cell2mat(peaks_total)); % suma de la magnitud de los picos
@@ -17,16 +17,19 @@ function TimeFeatures = features_t_domain(s)
     TimeFeatures = {s_median; s_desv; s_max; s_min; s_diff1_desv; s_diff1_median; numSCR; s_int};
 end
 
-function [peaks_total,locs_total] = peaks_local(s)
+function [peaks_total,locs_total] = peaks_local(s,mean)
     N = size(s, 2);
     column = 1;
     peaks_total = {};
     locs_total = {};
     while (column <= N)
         fragmento = s(:,column);
-        [peaks, locs] = findpeaks(fragmento,'Threshold', 0.01); %según el artículo de Posada-Quintero
-        % findpeaks considera pico toda muestra que es mayor que la muestra
-        % previa y la muestra siguiente (todos los máximos locales). 
+        [peaks, locs] = findpeaks(fragmento, ...
+            'Threshold', 0.05, ... % según el artículo de Posada-Quintero
+            'MinPeakProminence',); 
+        %findpeaks considera pico toda muestra que es mayor que la muestra
+        %previa y la muestra siguiente. Habría que matizar un poco qué
+        %consideramos "pico" para nuestro estudio (umbral, prominencia...)
         int = cumtrapz(fragmento); %área total acumulativa bajo la ventana
         int_peaks = diff(int(locs)); %área bajo los picos
         peaks_total{end+1} = peaks;
