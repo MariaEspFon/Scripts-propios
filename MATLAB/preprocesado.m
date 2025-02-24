@@ -4,7 +4,8 @@ clc
 %% Paso 1: Carga de señales y limpieza
 
 % Carga de los CSV de interés y generación de arrays con cada señal
-raw_signals = processCSVFiles('/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA');
+ruta = input('Introduzca la ruta a la base de datos EDA: ') %'/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA'
+raw_signals = processCSVFiles(ruta);
 signals = fieldnames(raw_signals);
 
 %% Paso 2: FILTRADO
