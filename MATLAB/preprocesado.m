@@ -10,27 +10,30 @@ signals = fieldnames(raw_signals);
 
 %% Paso 2: FILTRADO
 fs = 4; % frecuencia de muestreo de la señal
-%{
-PARÁMETROS DEL FILTRO PASO BAJO
-fc = input('Introduzca la frecuencia de corte deseada (sin normalizar): '); % frecuencia de corte 
-N=5; % orden del filtro
-wn = fc/(fs/2); % frecuencia de corte NORMALIZADA en relación a la
-% frecuencia de Nyquist. En nuestro caso, la frecuencia de Nyquist es 2 (fc/2)
-[b,a] = butter(N,wn,'low'); %Butterworth paso bajo
-% a y b son los coeficientes de la funcion de transferencia 
-%}
-% FILTRADO DE SEÑALES
 filtered_signals = cell(length(signals),2);
 % se añaden los identificadores de las señales originales
 filtered_signals(:,1) = signals;
-for i = 1:numel(signals)
-    filtered_signals{i,2} = filter(b,a,raw_signals.(signals{i}));
+f = input('Elija el filtrado: Butterworth paso bajo(1), mediana(2), media móvil exponencial(3)');
+
+for i = 1:numel(signals)    
+    if f == 1
+        fc = input('Introduzca la frecuencia de corte deseada (sin normalizar): '); % frecuencia de corte 
+        N=5; % orden del filtro
+        wn = fc/(fs/2); % frecuencia de corte NORMALIZADA en relación a la
+        % frecuencia de Nyquist. En nuestro caso, la frecuencia de Nyquist es 2 (fc/2)
+        [b,a] = butter(N,wn,'low'); %Butterworth paso bajo
+        % a y b son los coeficientes de la funcion de transferencia 
+        filtered_signals{i,2} = filter(b,a,raw_signals.(signals{i}));
+    elseif f == 2
+        n = input('Elija el tamaño (nº impar de muestras) del filtro de mediana: ');
+        filtered_signals{i,2} = medfilt1(raw_signals.(signals{i}),n);
+    elseif f ==3
+        alpha = input('Elija el parámetro de suavizado para el filtro exponencial: ');
+        filtered_signals{i,2} = filter(alpha, [1 alpha-1], raw_signals.(signals{i}),7);
+    end
 end
 
 disp('Section 2 complete: done filtering')
-
-% Filtro de mediana
-
 
 %% Paso 3: ENVENTANADO
 
