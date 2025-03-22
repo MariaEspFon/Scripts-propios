@@ -4,25 +4,21 @@ clc
 %% Paso 1: Carga de señales y limpieza
 
 % Carga de los CSV de interés y generación de arrays con cada señal
-ruta = input('Introduzca la ruta a la base de datos EDA: ') %'/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA'
+ruta = input('Introduzca la ruta a la base de datos EDA: '); %'/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA'
 raw_signals = processCSVFiles(ruta);
 signals = fieldnames(raw_signals);
 
 %% Paso 2: FILTRADO
 fs = 4; % frecuencia de muestreo de la señal
-
-% PARÁMETROS DEL FILTRO
-fc = 1; % frecuencia de corte 
+%{
+PARÁMETROS DEL FILTRO PASO BAJO
+fc = input('Introduzca la frecuencia de corte deseada (sin normalizar): '); % frecuencia de corte 
 N=5; % orden del filtro
 wn = fc/(fs/2); % frecuencia de corte NORMALIZADA en relación a la
-% frecuencia de Nyquist
-% En nuestro caso, la frecuencia de Nyquist es 2 
-% (es la máxima frecuencia de nuestra señal dada la fs)
-
-% diseño de un filtro Butterworth de paso bajo
+% frecuencia de Nyquist. En nuestro caso, la frecuencia de Nyquist es 2 (fc/2)
+[b,a] = butter(N,wn,'low'); %Butterworth paso bajo
 % a y b son los coeficientes de la funcion de transferencia 
-[b,a] = butter(N,wn,'low'); 
-
+%}
 % FILTRADO DE SEÑALES
 filtered_signals = cell(length(signals),2);
 % se añaden los identificadores de las señales originales
@@ -32,6 +28,9 @@ for i = 1:numel(signals)
 end
 
 disp('Section 2 complete: done filtering')
+
+% Filtro de mediana
+
 
 %% Paso 3: ENVENTANADO
 
@@ -65,7 +64,7 @@ elseif flag == 'w'
     for i = 1:numel(signals)
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        TimeFeatures{i,2} = zeros(8,size(w_signal,2));
+        TimeFeatures{i,2} = zeros(7,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
             t_features = features_t_domain(w_signal(:,window));
