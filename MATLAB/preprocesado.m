@@ -13,22 +13,26 @@ fs = 4; % frecuencia de muestreo de la señal
 filtered_signals = cell(length(signals),2);
 % se añaden los identificadores de las señales originales
 filtered_signals(:,1) = signals;
-f = input('Elija el filtrado: Butterworth paso bajo(1), mediana(2), media móvil exponencial(3)');
-
-for i = 1:numel(signals)    
-    if f == 1
-        fc = input('Introduzca la frecuencia de corte deseada (sin normalizar): '); % frecuencia de corte 
-        N=5; % orden del filtro
-        wn = fc/(fs/2); % frecuencia de corte NORMALIZADA en relación a la
-        % frecuencia de Nyquist. En nuestro caso, la frecuencia de Nyquist es 2 (fc/2)
-        [b,a] = butter(N,wn,'low'); %Butterworth paso bajo
-        % a y b son los coeficientes de la funcion de transferencia 
+f = input('Elija el filtrado: Butterworth paso bajo(1), mediana(2), media móvil exponencial(3) \n');
+    
+if f == 1
+    fc = input('Introduzca la frecuencia de corte deseada (sin normalizar): '); % frecuencia de corte 
+    N=5; % orden del filtro
+    wn = fc/(fs/2); % frecuencia de corte NORMALIZADA en relación a la
+    % frecuencia de Nyquist. En nuestro caso, la frecuencia de Nyquist es 2 (fc/2)
+    [b,a] = butter(N,wn,'low'); %Butterworth paso bajo
+    % a y b son los coeficientes de la funcion de transferencia 
+    for i = 1:numel(signals)
         filtered_signals{i,2} = filter(b,a,raw_signals.(signals{i}));
-    elseif f == 2
-        n = input('Elija el tamaño (nº impar de muestras) del filtro de mediana: ');
+    end
+elseif f == 2
+    n = input('Elija el tamaño (nº impar de muestras) del filtro de mediana: ');
+    for i = 1:numel(signals)
         filtered_signals{i,2} = medfilt1(raw_signals.(signals{i}),n);
-    elseif f ==3
-        alpha = input('Elija el parámetro de suavizado para el filtro exponencial: ');
+    end
+elseif f ==3
+    alpha = input('Elija el parámetro de suavizado para el filtro exponencial: ');
+    for i = 1:numel(signals)
         filtered_signals{i,2} = filter(alpha, [1 alpha-1], raw_signals.(signals{i}),7);
     end
 end
