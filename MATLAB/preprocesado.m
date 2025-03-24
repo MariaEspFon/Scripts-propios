@@ -32,8 +32,9 @@ elseif f == 2
     end
 elseif f ==3
     alpha = input('Elija el parámetro de suavizado para el filtro exponencial: ');
+    n = input('Elija el tamaño (nº impar de muestras) del filtro de mediana: ');
     for i = 1:numel(signals)
-        filtered_signals{i,2} = filter(alpha, [1 alpha-1], raw_signals.(signals{i}),7);
+        filtered_signals{i,2} = filter(alpha, [1 alpha-1], raw_signals.(signals{i}),n);
     end
 end
 
@@ -71,11 +72,11 @@ elseif flag == 'w'
     for i = 1:numel(signals)
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        TimeFeatures{i,2} = zeros(7,size(w_signal,2));
+        TimeFeatures{i,2} = zeros(10,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
             t_features = features_t_domain(w_signal(:,window));
-            TimeFeatures{i,2}(:,window) = cell2mat(t_features);
+            TimeFeatures{i,2}(:,window) = t_features;
         end
     end
     disp('Section 4.1. complete: time features extraction for windowed signals')
@@ -92,7 +93,7 @@ FreqFeatures(:,1) = signals;
 if flag == 'f'
     % extracción de características de las señales completas
     for i = 1:numel(signals)
-        FreqFeatures{i,2} = features_f_domain(filtered_signals{i,2});
+        FreqFeatures{i,2} = features_f_domain(filtered_signals{i,2}, fs);
     end
     disp('Section 4.2. complete: spectral features extraction for whole signals')
 
@@ -101,11 +102,11 @@ elseif flag == 'w'
     for i = 1:numel(signals)
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        FreqFeatures{i,2} = zeros(1,size(w_signal,2));
+        FreqFeatures{i,2} = zeros(3,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
-            f_features = features_f_domain(w_signal(:,window));
-            FreqFeatures{i,2}(:,window) = cell2mat(f_features);
+            f_features = features_f_domain(w_signal(:,window), fs);
+            FreqFeatures{i,2}(:,window) = f_features;
         end
     end
     disp('Section 4.2. complete: spectral features extraction for windowed signals')
