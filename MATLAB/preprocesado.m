@@ -4,8 +4,9 @@ clc
 %% Paso 1: Carga de señales y limpieza
 
 % Carga de los CSV de interés y generación de arrays con cada señal
+raw_signals = {};
 ruta = input('Introduzca la ruta a la base de datos EDA: '); %'/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA'
-raw_signals = processCSVFiles(ruta);
+raw_signals = processCSVFiles(ruta, raw_signals);
 
 %% Paso 2: FILTRADO
 fs = 4; % frecuencia de muestreo de la señal
@@ -120,6 +121,7 @@ for i = 1:numel(raw_signals(:,1))
 end
 
 % se exporta la matriz de vectores de características en formato .csv
-writematrix(feature_matrix','EDA_data.csv')
+matrix_name = input('Elija el nombre del archivo de exportación .csv: ');
+writematrix(feature_matrix', matrix_name)
 
 disp('Section 5 complete: feature matrix exported to .csv file')

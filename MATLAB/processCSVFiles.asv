@@ -1,4 +1,4 @@
-function csvData = processCSVFiles(baseDir, csvData)
+function csvData = processCSVFiles(baseDir, csvData, index)
     % Esta función encuentra y accede a la información de archivos .csv
     % guardados en un sistema de directorios
     % INPUT:
@@ -7,8 +7,7 @@ function csvData = processCSVFiles(baseDir, csvData)
     %   csvData - Struct que contiene los datos extraídos de cada .csv
     %   encontrado
 
-    csvData = {};
-    index = 1;
+    %csvData = {};
     % Lista de archivos y directorios existentes en el directorio base
     entries = dir(baseDir);
 
@@ -37,7 +36,7 @@ function csvData = processCSVFiles(baseDir, csvData)
             % guardar los datos asociados a su identificador en el struct
             csvData{index,1} = nameData; 
             csvData{index,2} = arrayData;
-            index = index + 1;
+            index = length(csvData) + 1;
             fprintf('Archivo procesado: %s\n', fullPath);
         end
     end
