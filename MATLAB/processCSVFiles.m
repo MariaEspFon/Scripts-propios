@@ -7,8 +7,8 @@ function csvData = processCSVFiles(baseDir)
     %   csvData - Struct que contiene los datos extraídos de cada .csv
     %   encontrado
 
-    csvData = struct();
-
+    csvData = {};
+    index = 1;
     % Lista de archivos y directorios existentes en el directorio base
     entries = dir(baseDir);
 
@@ -25,7 +25,8 @@ function csvData = processCSVFiles(baseDir)
             % Búsqueda recursiva
             subDirData = processCSVFiles(fullPath);
             % Combinar los resultados recursivos en el struct principal
-            csvData = mergeStructs(csvData, subDirData);
+            csvData = [csvData; subDirData];
+            index = length(csvData) + 1;
 
         elseif endsWith(entryName, '.csv', 'IgnoreCase', true)
             % leer archivo .csv
@@ -33,20 +34,11 @@ function csvData = processCSVFiles(baseDir)
             arrayData = table2array(tableData);
             % crear un identificador basado en el nombre del archivo
             [~, fileName] = fileparts(entryName);
-            fieldName = matlab.lang.makeValidName(fileName,'Prefix','s_');
+            nameData = matlab.lang.makeValidName(fileName,'Prefix','s_');
             % guardar los datos asociados a su identificador en el struct
-            csvData.(fieldName) = arrayData;
+            csvData{index,1} = nameData; 
+            csvData{index,2} = arrayData;
             fprintf('Archivo procesado: %s\n', fullPath);
         end
-    end
-end
-
-function mergedStruct = mergeStructs(struct1, struct2)
-    % función auxiliar para combinar los datos de dos structs en una
-    % variable struct única
-    mergedStruct = struct1;
-    fields2 = fieldnames(struct2);
-    for i = 1:length(fields2)
-        mergedStruct.(fields2{i}) = struct2.(fields2{i});
     end
 end
