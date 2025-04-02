@@ -19,7 +19,9 @@ function csvData = processCSVFiles(baseDir, csvData)
         % se ignoran en la búsqueda la ruta de ejecución y el directorio
         % padre, incluidos en la lista de entradas
         if entries(i).isdir
-            if strcmp(entryName, '.') || strcmp(entryName, '..') || strcmp(entryName,'EDA04')
+            if strcmp(entryName, '.') || strcmp(entryName, '..') || ...
+                    strcmp(entryName,'EDA04') || strcmp(entryName,'EDA016')...
+                    || strcmp(entryName,'EDA018')
                 continue;
             end
             % Búsqueda recursiva

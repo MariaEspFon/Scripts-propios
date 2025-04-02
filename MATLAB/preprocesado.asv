@@ -129,23 +129,23 @@ for i = 1:numel(TnPhFeatures(:,1))
     % extracción de las componentes enventanadas
     w_phasic = windowed_phtn{i,2};
     w_tonic = windowed_phtn{i,3};
-    for window = 1:size(w_phasic, 2)
+    for window = 1:size(TnPhFeatures{i,2}, 2)
         % extracción de características a cada ventana de la señal
-        TnPhFeatures{i,2}(:,window) = convexopt(w_phasic(:,window), w_tonic(:,window), fs);
+        TnPhFeatures{i,2}(:,window) = convexopt(w_phasic(:,window), w_tonic(, fs);
     end
 end
-
-disp('Section 5.3. complete: phasic and tonic features extraction for windowed signals')
-
 %% Paso 6. Formación del dataset
 
+n_TFeatures = size(TimeFeatures{1,2},2);
+n_FFeatures = size(FreqFeatures{1,2},2);
+% feature_matrix = zeros(1+n_FFeatures+n_TFeatures,);
 feature_matrix = [];
 
 % las características de cada fragmento de señal se almacenan por columnas
 for i = 1:numel(raw_signals(:,1))
     % se agrupan las características de todos los dominios en un solo
     % vector
-    features = [TimeFeatures{i,2}; FreqFeatures{i,2}; TnPhFeatures{i,2}];
+    features = [TimeFeatures{i,2}; FreqFeatures{i,2}];
     % etiquetado del vector de características según el estado motor
     if contains(raw_signals(i,1), "ON")
         features(end+1,:) = 1;       
