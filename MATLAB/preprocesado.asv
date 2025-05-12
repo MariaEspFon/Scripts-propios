@@ -1,13 +1,14 @@
 clear
 clc
 
-%% Paso 1: Carga de señales y limpieza
+%% Paso 1: Carga de señales y visión global
 
 % Carga de los CSV de interés y generación de arrays con cada señal
 raw_signals = {};
 ruta = '/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA';
 %ruta = input('Introduzca la ruta a la base de datos EDA: '); %'/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA'
 raw_signals = processCSVFiles(ruta, raw_signals);
+table = durations(raw_signals);
 
 %% Paso 2: FILTRADO
 fs = 4; % frecuencia de muestreo de la señal
@@ -48,16 +49,16 @@ disp('Section 3 complete: done tonic and phasic decomposition')
 w_length = 30; % unidades = SEGUNDOS
 
 windowed_signals = cell(length(raw_signals),2);
-windowed_phtn = cell(length(raw_signals),3);
+%windowed_phtn = cell(length(raw_signals),3);
 
 % se añaden los identificadores de las señales originales
 windowed_signals(:,1) = raw_signals(:,1);
-windowed_phtn(:,1) = raw_signals(:,1);
+%windowed_phtn(:,1) = raw_signals(:,1);
 
 for i = 1:numel(raw_signals(:,1))
     windowed_signals{i,2} = enventanar(filtered_signals{i,2},fs,w_length);
-    windowed_phtn{i,2} = enventanar(phtn_signals{i,2},fs,w_length);
-    windowed_phtn{i,3} = enventanar(phtn_signals{i,3},fs,w_length);
+    %windowed_phtn{i,2} = enventanar(phtn_signals{i,2},fs,w_length);
+    %windowed_phtn{i,3} = enventanar(phtn_signals{i,3},fs,w_length);
 end
 
 disp('Section 4 complete: done windowing')
@@ -68,6 +69,7 @@ flag = input('choose your analysis strategy: full signal (f) or windowed signal 
 
 TimeFeatures = cell(length(raw_signals),2);
 TimeFeatures(:,1) = raw_signals(:,1);    
+n_features_T = 6;
 
 if flag == 'f'
     % extracción de características de las señales completas
@@ -80,7 +82,7 @@ elseif flag == 'w'
     for i = 1:numel(raw_signals(:,1))
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        TimeFeatures{i,2} = zeros(10,size(w_signal,2));
+        TimeFeatures{i,2} = zeros(n_features_T,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
             TimeFeatures{i,2}(:,window) = features_t_domain(w_signal(:,window));
@@ -97,6 +99,8 @@ end
 FreqFeatures = cell(length(raw_signals),2);
 FreqFeatures(:,1) = raw_signals(:,1);
 
+n_features_F = 1;
+
 if flag == 'f'
     % extracción de características de las señales completas
     for i = 1:numel(raw_signals(:,1))
@@ -109,7 +113,7 @@ elseif flag == 'w'
     for i = 1:numel(raw_signals(:,1))
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        FreqFeatures{i,2} = zeros(3,size(w_signal,2));
+        FreqFeatures{i,2} = zeros(n_features_F,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
             FreqFeatures{i,2}(:,window) = features_f_domain(w_signal(:,window), fs);
@@ -129,22 +133,23 @@ for i = 1:numel(TnPhFeatures(:,1))
     % extracción de las componentes enventanadas
     w_phasic = windowed_phtn{i,2};
     w_tonic = windowed_phtn{i,3};
-    for window = 1:size(TnPhFeatures{i,2}, 2)
+    for window = 1:size(w_phasic, 2)
         % extracción de características a cada ventana de la señal
-        TnPhFeatures{i,2}(:,window) = convexopt(w_phasic(:,window), w_tonic(, fs);
+        TnPhFeatures{i,2}(:,window) = convexopt(w_phasic(:,window), w_tonic(:,window), fs);
     end
 end
+
+disp('Section 5.3. complete: phasic and tonic features extraction for windowed signals')
+
 %% Paso 6. Formación del dataset
 
-n_TFeatures = size(TimeFeatures{1,2},2);
-n_FFeatures = size(FreqFeatures{1,2},2);
-% feature_matrix = zeros(1+n_FFeatures+n_TFeatures,);
 feature_matrix = [];
 
 % las características de cada fragmento de señal se almacenan por columnas
 for i = 1:numel(raw_signals(:,1))
     % se agrupan las características de todos los dominios en un solo
     % vector
+    %features = [TimeFeatures{i,2}; FreqFeatures{i,2}; TnPhFeatures{i,2}];
     features = [TimeFeatures{i,2}; FreqFeatures{i,2}];
     % etiquetado del vector de características según el estado motor
     if contains(raw_signals(i,1), "ON")
