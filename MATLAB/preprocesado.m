@@ -1,13 +1,14 @@
 clear
 clc
 
-%% Paso 1: Carga de señales y limpieza
+%% Paso 1: Carga de señales y visión global
 
 % Carga de los CSV de interés y generación de arrays con cada señal
 raw_signals = {};
 ruta = '/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA';
 %ruta = input('Introduzca la ruta a la base de datos EDA: '); %'/home/gordi/Escritorio/TFG/TFG Maria - Parkinson/Datos_analizados_EDA'
 raw_signals = processCSVFiles(ruta, raw_signals);
+table = durations(raw_signals);
 
 %% Paso 2: FILTRADO
 fs = 4; % frecuencia de muestreo de la señal
@@ -68,6 +69,7 @@ flag = input('choose your analysis strategy: full signal (f) or windowed signal 
 
 TimeFeatures = cell(length(raw_signals),2);
 TimeFeatures(:,1) = raw_signals(:,1);    
+n_features_T = 10;
 
 if flag == 'f'
     % extracción de características de las señales completas
@@ -80,7 +82,7 @@ elseif flag == 'w'
     for i = 1:numel(raw_signals(:,1))
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        TimeFeatures{i,2} = zeros(10,size(w_signal,2));
+        TimeFeatures{i,2} = zeros(n_features_T,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
             TimeFeatures{i,2}(:,window) = features_t_domain(w_signal(:,window));
@@ -97,6 +99,8 @@ end
 FreqFeatures = cell(length(raw_signals),2);
 FreqFeatures(:,1) = raw_signals(:,1);
 
+n_features_F = 3;
+
 if flag == 'f'
     % extracción de características de las señales completas
     for i = 1:numel(raw_signals(:,1))
@@ -109,7 +113,7 @@ elseif flag == 'w'
     for i = 1:numel(raw_signals(:,1))
         % extracción de la señal enventanada
         w_signal = windowed_signals{i,2};
-        FreqFeatures{i,2} = zeros(3,size(w_signal,2));
+        FreqFeatures{i,2} = zeros(n_features_F,size(w_signal,2));
         for window = 1:size(w_signal, 2)
             % extracción de características a cada ventana de la señal
             FreqFeatures{i,2}(:,window) = features_f_domain(w_signal(:,window), fs);
@@ -146,6 +150,7 @@ for i = 1:numel(raw_signals(:,1))
     % se agrupan las características de todos los dominios en un solo
     % vector
     features = [TimeFeatures{i,2}; FreqFeatures{i,2}; TnPhFeatures{i,2}];
+    %features = [TimeFeatures{i,2}];% FreqFeatures{i,2}];
     % etiquetado del vector de características según el estado motor
     if contains(raw_signals(i,1), "ON")
         features(end+1,:) = 1;       
