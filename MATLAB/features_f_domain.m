@@ -15,4 +15,5 @@ function FreqFeatures = features_f_domain(s_entrada, fs)
     pw = sum(power, 1); %potencia de cada ventana
     [bw, flo, fhi, pow99] = obw(s_entrada,fs);
     FreqFeatures = [pw; bw; fhi];
+    %FreqFeatures = pw;
 end

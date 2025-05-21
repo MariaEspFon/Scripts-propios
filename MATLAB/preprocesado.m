@@ -69,7 +69,7 @@ flag = input('choose your analysis strategy: full signal (f) or windowed signal 
 
 TimeFeatures = cell(length(raw_signals),2);
 TimeFeatures(:,1) = raw_signals(:,1);    
-n_features_T = 10;
+n_features_T = 11;
 
 if flag == 'f'
     % extracción de características de las señales completas
@@ -164,4 +164,4 @@ end
 matrix_name = input('Elija el nombre del archivo de exportación .csv: ');
 writematrix(feature_matrix', matrix_name)
 
-disp('Section 5 complete: feature matrix exported to .csv file')
+disp('Section 6 complete: feature matrix exported to .csv file')
